@@ -1,3 +1,4 @@
+type Motemen = [[(u8, u8, u8); 4]; 4];
 pub(crate) const MOTEMEN: [[(u8, u8, u8); 4]; 4] = [
     [( 195, 213, 227 ), ( 252, 255, 246 ), ( 19, 58, 137 ),   ( 157, 167, 185 )],
     [( 129, 82, 38 ),   ( 255, 224, 211 ), ( 248, 199, 182 ), ( 218, 46, 32 )],
@@ -33,7 +34,7 @@ impl Into<Html> for [[(u8,u8,u8); 4]; 4] {
 impl Into<Html> for ( [[(u8, u8, u8); 4]; 4], u8 ) {
     fn into(self) -> Html {
         let size = self.1;
-        let content = MOTEMEN
+        let content = self.0
             .into_iter()
             .map(|row| 
                  row
@@ -66,7 +67,7 @@ impl Into<Html> for ( [[(u8, u8, u8); 4]; 4], u8 ) {
 impl Into<Shell> for ( [[(u8, u8, u8); 4]; 4], u8 ) {
     fn into(self) -> Shell {
         let size: usize = self.1.into();
-        let content = MOTEMEN
+        let content = self.0
             .into_iter()
             .map(|row| {
                 vec![
@@ -96,13 +97,27 @@ impl Into<MotemenVariant> for String {
     }
 }
 
+impl Into<MotemenVariant> for (String, Motemen) {
+    fn into(self) -> MotemenVariant {
+        let (format, motemen) = self;
+        (format, motemen, 1).into()
+    }
+}
+
 impl Into<MotemenVariant> for (String, u8) {
     fn into(self) -> MotemenVariant {
         let (format, size) = self;
+        (format, MOTEMEN, size).into()
+    }
+}
+
+impl Into<MotemenVariant> for (String, Motemen, u8) {
+    fn into(self) -> MotemenVariant {
+        let (format, motemen, size) = self;
         match format.as_str() {
-            "shell" => MotemenVariant::SHELL((MOTEMEN, size).into()),
-            "html" => MotemenVariant::HTML((MOTEMEN, size).into()),
-            _ => MotemenVariant::SHELL((MOTEMEN, size).into()),
+            "shell" => MotemenVariant::SHELL((motemen, size).into()),
+            "html" => MotemenVariant::HTML((motemen, size).into()),
+            _ => MotemenVariant::SHELL((motemen, size).into()),
         }
     }
 }
