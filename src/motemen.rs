@@ -54,8 +54,8 @@ impl Into<Svg> for ( [[(u8, u8, u8); 4]; 4], u8 ) {
                  .map(|(x, color)|
                       format!(
                           "<rect x=\"{}em\" y=\"{}em\" width=\"{}em\" height=\"{}em\" stroke=\"rgb({}, {}, {})\" fill=\"rgb({}, {}, {})\" />",
-                          x as u8 * size,
-                          y as u8 * size,
+                          x as u32 * size as u32,
+                          y as u32 * size as u32,
                           size,
                           size,
                           color.0,
@@ -72,7 +72,7 @@ impl Into<Svg> for ( [[(u8, u8, u8); 4]; 4], u8 ) {
             .collect::<Vec<String>>()
             .concat();
         Svg {
-            content: format!("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"{}em\" height=\"{}em\">{}</svg>", size * 4, size * 4, content)
+            content: format!("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"{}em\" height=\"{}em\">{}</svg>", size as u32 * 4, size as u32 * 4, content)
         }
     }
 }
