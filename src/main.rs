@@ -1,4 +1,4 @@
-use axum::{extract::Path, http::StatusCode, response::{Html, IntoResponse, Response}, routing::get, Router};
+use axum::{extract::Path, http::{header, HeaderValue, StatusCode}, response::{Html, IntoResponse, Response}, routing::get, Router};
 use rand::seq::SliceRandom;
 use crate::motemen::*;
 
@@ -31,6 +31,13 @@ async fn get_motemen(
             StatusCode::OK,
             content.content
         ).into_response(),
+        MotemenVariant::SVG(content) => (
+            [(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static(mime::IMAGE_SVG.as_ref())
+            )],
+            content.content
+        ).into_response(),
     }
 }
 
@@ -52,6 +59,13 @@ async fn get_random_motemen(
         MotemenVariant::SHELL(content) => (
             StatusCode::OK,
             content.content
+        ).into_response(),
+        MotemenVariant::SVG(content) => (
+            [(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static(mime::IMAGE_SVG.as_ref())
+            )],
+            axum::body::Body::from(content.content)
         ).into_response(),
     }
 }
@@ -75,6 +89,13 @@ async fn get_random_scaled_motemen(
             StatusCode::OK,
             content.content
         ).into_response(),
+        MotemenVariant::SVG(content) => (
+            [(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static(mime::IMAGE_SVG.as_ref())
+            )],
+            axum::body::Body::from(content.content)
+        ).into_response(),
     }
 }
 async fn get_scaled_motemen(
@@ -91,6 +112,13 @@ async fn get_scaled_motemen(
         MotemenVariant::SHELL(content) => (
             StatusCode::OK,
             content.content
+        ).into_response(),
+        MotemenVariant::SVG(content) => (
+            [(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static(mime::IMAGE_SVG.as_ref())
+            )],
+            axum::body::Body::from(content.content)
         ).into_response(),
     }
 }

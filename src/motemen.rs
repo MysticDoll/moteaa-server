@@ -6,6 +6,9 @@ pub(crate) const MOTEMEN: [[(u8, u8, u8); 4]; 4] = [
     [( 174, 179, 183 ), ( 55, 62, 68 ), ( 83, 32, 13 ),    ( 89, 90, 95 )]
 ];
 
+pub(crate) struct Svg {
+    pub content: String
+}
 pub(crate) struct Html {
     pub content: String
 }
@@ -17,6 +20,7 @@ pub(crate) struct Shell {
 pub(crate) enum MotemenVariant {
     HTML(Html),
     SHELL(Shell),
+    SVG(Svg)
 }
 
 impl Into<Shell> for [[(u8, u8, u8); 4]; 4] {
@@ -28,6 +32,48 @@ impl Into<Shell> for [[(u8, u8, u8); 4]; 4] {
 impl Into<Html> for [[(u8,u8,u8); 4]; 4] {
     fn into(self) -> Html {
         (MOTEMEN, 1).into()
+    }
+}
+
+impl Into<Svg> for [[(u8,u8,u8); 4]; 4] {
+    fn into(self) -> Svg {
+        (MOTEMEN, 1).into()
+    }
+}
+
+impl Into<Svg> for ( [[(u8, u8, u8); 4]; 4], u8 ) {
+    fn into(self) -> Svg {
+        let size = self.1;
+        let content = self.0
+            .into_iter()
+            .enumerate()
+            .map(|(y, row)| 
+                 row
+                 .into_iter()
+                 .enumerate()
+                 .map(|(x, color)|
+                      format!(
+                          "<rect x=\"{}em\" y=\"{}em\" width=\"{}em\" height=\"{}em\" stroke=\"rgb({}, {}, {})\" fill=\"rgb({}, {}, {})\" />",
+                          x as u8 * size,
+                          y as u8 * size,
+                          size,
+                          size,
+                          color.0,
+                          color.1,
+                          color.2,
+                          color.0,
+                          color.1,
+                          color.2
+                      )
+                 )
+                 .collect::<Vec<String>>()
+                 .concat()
+            )
+            .collect::<Vec<String>>()
+            .concat();
+        Svg {
+            content: format!("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"{}em\" height=\"{}em\">{}</svg>", size * 4, size * 4, content)
+        }
     }
 }
 
@@ -117,6 +163,7 @@ impl Into<MotemenVariant> for (String, Motemen, u8) {
         match format.as_str() {
             "shell" => MotemenVariant::SHELL((motemen, size).into()),
             "html" => MotemenVariant::HTML((motemen, size).into()),
+            "svg" => MotemenVariant::SVG((motemen, size).into()),
             _ => MotemenVariant::SHELL((motemen, size).into()),
         }
     }
